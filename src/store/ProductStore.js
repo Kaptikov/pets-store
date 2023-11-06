@@ -30,6 +30,16 @@ export const useProductStore = defineStore('productStore', {
       }
     },
 
+    async addToCart(productId) {
+      try {
+        const response = await axios.post('/api/CartItem/', { productId })
+        // Обработка ответа от API
+        console.log(response.data)
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
     async removeFromFavorites(productId) {
       try {
         const response = await axios.delete(

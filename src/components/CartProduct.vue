@@ -12,26 +12,34 @@
       <div class="item-cart__btns__quantity-body">
         <button
           class="item-cart__btns__quantity-btn--minus"
-          @click="quantity !== 1 ? (quantity -= 1) : (quantity = 1)"
+          @click="decrementQuantity(cartItem.id, cartItem.quantity)"
         >
           -
         </button>
         <input
           class="item-cart__btns__quantity"
           type="text"
-          v-model="quantity"
+          v-model="cartItem.quantity"
+          @input="updateQuantity(cartItem.id, cartItem.quantity)"
         />
         <button
           class="item-cart__btns__quantity-btn--plus"
-          @click="quantity += 1"
+          @click="incrementQuantity(cartItem.id, cartItem.quantity)"
         >
           +
         </button>
       </div>
       <div class="item-cart__price">{{ cartItem.products.price }} р.</div>
+      <button
+        class="item-cart__btn--delete"
+        @click="deleteFromCart(cartItem.id)"
+      >
+        Удалить
+      </button>
     </div>
   </div>
 </template>
+
 <script>
 import { ref, onMounted } from 'vue'
 import { useProductImgStore } from '@/store/ProductImgStore'
@@ -47,15 +55,55 @@ export default {
   props: {
     id: {
       type: String,
+      // required: true,
       default: '',
     },
     cartItem: {},
   },
 
+  methods: {
+    // incrementQuantity() {
+    //   this.quantity++
+    //   this.updateQuantity()
+    // },
+    // decrementQuantity() {
+    //   if (this.quantity > 1) {
+    //     this.quantity--
+    //     this.updateQuantity()
+    //   }
+    // },
+    // updateQuantity(id) {
+    //   const cartStore = useCartStore()
+    //   cartStore.updateCartItemQuantity(id, cartStore,cartItem.quantity)
+    // },
+  },
+
   setup(props) {
+    // const quantity = ref(1)
     const productImgStore = useProductImgStore()
     const productStore = useProductStore()
     const cartStore = useCartStore()
+
+    function deleteFromCart(id) {
+      cartStore.removeFromCart(id)
+    }
+
+    function updateQuantity(id, quantity) {
+      cartStore.updateCartItemQuantity(id, quantity)
+      console.log(quantity)
+    }
+
+    function incrementQuantity(id, quantity) {
+      quantity++
+      cartStore.updateCartItemQuantity(id, quantity)
+    }
+
+    function decrementQuantity(id, quantity) {
+      if (quantity > 1) {
+        quantity--
+        cartStore.updateCartItemQuantity(id, quantity)
+      }
+    }
 
     onMounted(() => {
       // productStore.getProduct(props.id)
@@ -65,6 +113,10 @@ export default {
     // const productStore = useProductStore()
     return {
       cartStore,
+      deleteFromCart,
+      updateQuantity,
+      incrementQuantity,
+      decrementQuantity,
       // productStore,
       //productImgStore,
     }
@@ -72,7 +124,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .catalog {
   // .catalog__card
   &__card {
@@ -179,6 +231,12 @@ export default {
     font-weight: 400;
     line-height: 114.286%;
   }
+}
+
+.item-cart__btn--delete {
+  position: absolute;
+  top: 0;
+  right: 15px;
 }
 .card-catalog__swiper {
   .swiper-pagination-fraction,

@@ -29,6 +29,13 @@
           <div class="catalog__container-loader _container" v-else>
             <h3>Error: Data Not Downloaded</h3>
           </div>
+          <div>
+            <CartProduct
+              v-for="cartItem of cartStore.cartItems"
+              :key="cartItem.id"
+              :cartItem="cartItem"
+            />
+          </div>
           <div class="catalog__pagination pagination-catalog">
             <a
               href="#"
@@ -62,7 +69,7 @@
   <Footer />
 </template>
 <script>
-import { onMounted, defineComponent } from 'vue'
+import { onMounted, onUpdated, defineComponent } from 'vue'
 import { useProductStore } from '../store/ProductStore'
 import { useCartStore } from '@/store/CartStore'
 // import { useSubcategoriesStore } from '../store/CategoryStore'
@@ -73,6 +80,7 @@ import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 import Product from '@/components/Product.vue'
 import Categories from '@/components/Categories.vue'
+import { useFavouriteStore } from '@/store/FavouriteStore'
 export default defineComponent({
   components: {
     Header,
@@ -101,22 +109,14 @@ export default defineComponent({
   setup(props) {
     const productStore = useProductStore()
     const cartStore = useCartStore()
+    const favouriteStore = useFavouriteStore()
     //const categoriesStore = useCategoryStore()
     onMounted(() => {
       //window.initSelects()
       productStore.getProduct(props.id)
-      cartStore.getProductByCart(props.id)
-      // productStore.getProductFiltered(props.id)
-      // setTimeout(() => {
-      //   if (props.id !== null) {
-      //     productStore.getProduct(props.id)
-      //   }
-      // }, 1000)
-
-      //categoriesStore.getCategory(props.id)
-      //categoriesStore.getSubcategory(props.id)
+      favouriteStore.getFavourite(props.id)
+      // cartStore.getCart(props.id)
     })
-
     return {
       productStore,
       cartStore,

@@ -24,8 +24,9 @@
     </swiper>
     <div class="card-catalog__wrapper">
       <button
+        v-if="!isFavourite"
         class="card-catalog__btn--favourite"
-        @click="handleFavoriteClick(product.id)"
+        @click="btnAddToFavourite(product.id)"
       >
         <svg
           width="38"
@@ -42,6 +43,28 @@
           />
         </svg>
       </button>
+
+      <button
+        v-else
+        class="card-catalog__btn--favourite"
+        @click="btnRemoveForFavourite(product.id)"
+      >
+        <svg
+          width="38"
+          height="33"
+          viewBox="0 0 38 33"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M20.88 4.08993L20.8825 4.08749C21.7186 3.27334 22.7218 2.62233 23.8353 2.17649C24.9488 1.73061 26.1475 1.5 27.3602 1.5C28.5729 1.5 29.7717 1.73061 30.8852 2.17649C31.9986 2.62233 33.0019 3.27334 33.8379 4.08749L33.8417 4.09112C37.3861 7.51877 37.3861 13.0537 33.8417 16.4814L19.0315 30.798L19.0289 30.8006C19.0282 30.801 19.0269 30.8016 19.025 30.8024C19.0192 30.8047 19.0105 30.8068 19 30.8068C18.9895 30.8068 18.9808 30.8047 18.975 30.8024L18.4172 32.1948L18.975 30.8024C18.9731 30.8016 18.9718 30.8009 18.9711 30.8005L18.9685 30.798L4.15833 16.4814C4.15826 16.4813 4.15819 16.4812 4.15812 16.4812C0.614035 13.0536 0.613731 7.52055 4.15858 4.09087L4.15859 4.09088L4.16207 4.08749C4.99812 3.27334 6.0014 2.62233 7.11482 2.17649C8.22835 1.73061 9.42708 1.5 10.6398 1.5C11.8525 1.5 13.0512 1.73061 14.1647 2.17649C15.2782 2.62233 16.2814 3.27334 17.1175 4.08749L17.1175 4.0875L17.1236 4.09342C17.3782 4.33848 17.6151 4.59746 17.8361 4.86933L18.9955 6.2954L20.1603 4.87372C20.3857 4.59861 20.6251 4.33703 20.88 4.08993Z"
+            stroke="currentColor"
+            stroke-width="0"
+            fill="#D04847"
+          />
+        </svg>
+      </button>
+
       <button class="card-catalog__btn--comparison">
         <svg
           width="33"
@@ -75,7 +98,7 @@
         {{ product.name }}
       </router-link>
       <div class="card-catalog__btns">
-        <div class="card-catalog__quantity-body">
+        <!-- <div class="card-catalog__quantity-body">
           <button
             class="card-catalog__quantity-btn--minus"
             @click="quantity !== 1 ? (quantity -= 1) : (quantity = 1)"
@@ -93,8 +116,8 @@
           >
             +
           </button>
-        </div>
-        <button class="card-catalog__cart">
+        </div> -->
+        <button class="card-catalog__cart" @click="btnAddToCart(product.id)">
           В корзину
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -115,10 +138,11 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUpdated, watch, computed } from 'vue'
 import { useProductImgStore } from '@/store/ProductImgStore'
 import { useProductStore } from '@/store/ProductStore'
 import { useFavouriteStore } from '@/store/FavouriteStore'
+import { useCartStore } from '@/store/CartStore'
 
 import { Pagination } from 'swiper/modules'
 
@@ -141,14 +165,18 @@ export default {
     },
     product: {},
   },
+
+  computed: {},
   setup(props) {
     const productStore = useProductStore()
+    const favouriteStore = useFavouriteStore()
     const productImgStore = useProductImgStore()
+    const cartStore = useCartStore()
     const onSwiper = swiper => {
-      console.log(swiper)
+      // console.log(swiper)
     }
     const onSlideChange = () => {
-      console.log('slide change')
+      // console.log('slide change')
     }
 
     const getProductImgForProduct = productId => {
@@ -157,19 +185,46 @@ export default {
       )
     }
 
-    function handleFavoriteClick(productId) {
+    function btnAddToFavourite(productId) {
       productStore.addToFavorites(productId)
     }
 
+    function btnAddToCart(productId) {
+      productStore.addToCart(productId)
+    }
+
+    function btnRemoveForFavourite() {
+      console.log('Товар удален из избранного')
+    }
+
+    // const isFavourite = productId => {
+    //   return favouriteStore.checkProductInFavorite(productId)
+    // }
+    const isFavourite = computed(() => {
+      return (
+        favouriteStore.favouriteItems.find(
+          favouriteItem => favouriteItem.productId === props.product.id
+        ) !== undefined
+      )
+    })
+
     onMounted(() => {
       // Fetch data from the stores
+      // favouriteStore.checkProductInFavorite(props.id)
       productImgStore.getProductImg(props.id)
+      // favouriteStore.getFavourite(props.id)
     })
     // const productStore = useProductStore()
     return {
       productImgStore,
+      cartStore,
+      favouriteStore,
       getProductImgForProduct,
-      handleFavoriteClick,
+      btnAddToFavourite,
+      btnAddToCart,
+      btnRemoveForFavourite,
+      isFavourite,
+      // buttonTitle,
       onSwiper,
       onSlideChange,
       pagination: {
@@ -238,9 +293,10 @@ export default {
     margin-bottom: 46px;
   }
   &__btns {
-    display: flex;
+    // display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    width: 100%;
+    // justify-content: space-between;
     align-items: center;
     color: $main-color;
   }
@@ -279,14 +335,21 @@ export default {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    max-width: 163px;
+    // max-width: 163px;
     width: 100%;
     height: 45px;
+    padding: 15px;
     border-radius: 10px;
     border: 1px solid #eaeaea;
     font-size: 21px;
     font-weight: 400;
     line-height: 114.286%;
+    transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
+
+    &:hover {
+      background: $blue-first;
+      color: #fff;
+    }
   }
 }
 .card-catalog__swiper {

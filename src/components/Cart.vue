@@ -1,6 +1,9 @@
 <template>
   <button @click="openDialog" class="cart__button menu-icons__btn">
-    <img src="../assets/img/cart.svg" alt="cart" />
+    <div class="cart__icon">
+      <img src="../assets/img/cart.svg" alt="cart" />
+      <div class="cart__counter">{{ cartStore.cartItems.length }}</div>
+    </div>
   </button>
   <dialog
     ref="dialogRef"
@@ -20,7 +23,7 @@
       <div class="cart__info info-cart">
         <div class="info-cart__price">
           <span>Итого:</span>
-          <span>25р.</span>
+          <span>{{ cartStore.finalPrice }} р.</span>
         </div>
         <button class="info-cart__btn">Оформить заказ</button>
       </div>
@@ -29,7 +32,7 @@
 </template>
 
 <script>
-import { onMounted, defineComponent, computed } from 'vue'
+import { onMounted, onUpdated, defineComponent, computed } from 'vue'
 import { useProductStore } from '../store/ProductStore'
 import { useCartStore } from '../store/CartStore'
 import CartProduct from '@/components/CartProduct.vue'
@@ -40,7 +43,7 @@ export default {
   },
   data() {
     return {
-      quantity: 1,
+      // quantity: 1,
       isDialogOpen: false,
     }
   },
@@ -49,6 +52,7 @@ export default {
       type: String,
       default: '',
     },
+    // cartItem: {},
   },
 
   setup(props) {
@@ -57,6 +61,14 @@ export default {
 
     const productsInCart = computed(() => {
       return cartStore.filteredCartItems()
+    })
+
+    function finalPriceCount(cartItem) {
+      return cartItem.products.price * cartItem.quantity
+    }
+
+    onUpdated(() => {
+      // cartStore.getCart(props.id)
     })
     onMounted(() => {
       //window.initSelects()
@@ -69,6 +81,7 @@ export default {
       productsInCart,
       productStore,
       cartStore,
+      finalPriceCount,
     }
   },
 
@@ -106,9 +119,27 @@ export default {
   transform: translate(30%, 0);
 }
 .cart {
+  position: relative;
   // .cart__button
   &__button {
     // cursor: pointer;
+  }
+  &__icon {
+    position: relative;
+  }
+  &__counter {
+    position: absolute;
+    top: -10px;
+    right: -5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+    color: #fff;
+    background: $blue-first;
+    border-radius: 50%;
   }
   &__overlay {
     position: fixed;

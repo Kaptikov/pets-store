@@ -7,13 +7,31 @@ export const useCartStore = defineStore('cartStore', {
     products: [],
   }),
 
+  getters: {
+    finalPrice() {
+      return this.cartItems.reduce((total, item) => {
+        // console.log(item.quantity)
+        // console.log(item.products.price)
+
+        return total + item.quantity * item.products.price
+      }, 0)
+    },
+    // isFavourite() {
+    //   return (
+    //     favouriteItems.find(
+    //       favouriteItem => favouriteItem.productId === props.product.id
+    //     ) !== undefined
+    //   )
+    // },
+  },
+
   actions: {
     async getCart(id) {
       axios
         .get(`/api/CartItem/${id}`)
         .then(response => {
           this.cartItems = response.data
-          console.log(this.cartItems)
+          // console.log(this.cartItems)
         })
         .catch(error => {
           console.log(error)
@@ -32,6 +50,28 @@ export const useCartStore = defineStore('cartStore', {
         .catch(error => {
           console.log(error)
         })
+    },
+
+    async removeFromCart(id) {
+      try {
+        const response = await axios.delete(`/api/CartItem/${id}/`)
+        this.cartItems = this.cartItems.filter(cartItem => cartItem.id !== id)
+        // Handle the response from the API
+        console.log(response.data)
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
+    async updateCartItemQuantity(id, quantity) {
+      try {
+        const response = await axios.put(`/api/CartItem/${id}`, { quantity })
+        console.log('Количество', quantity)
+        console.log(response.data)
+        // Handle the response from the API
+      } catch (error) {
+        console.log(error)
+      }
     },
 
     // async getProductByCart(id) {
