@@ -1,7 +1,7 @@
 <template lang="">
   <Header />
   <div class="page product__page">
-    <div class="product">
+    <div class="product" v-if="productStore.products.id">
       <div class="product__container-top _container">
         <div class="product__swiper swiper-product">
           <swiper
@@ -201,7 +201,11 @@
               <div class="product-info__price">
                 {{ productStore.products.price }} р.
               </div>
-              <button class="product-info__favoroite">
+              <button
+                v-if="!isFavourite"
+                class="product-info__favoroite"
+                @click="btnAddToFavourite(productStore.products.id)"
+              >
                 <svg
                   width="38"
                   height="32"
@@ -216,15 +220,58 @@
                   />
                 </svg>
               </button>
+              <button
+                v-else
+                class="product-info__favoroite"
+                @click="btnRemoveForFavourite(productStore.products.id)"
+              >
+                <svg
+                  width="38"
+                  height="33"
+                  viewBox="0 0 38 33"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M20.88 4.08993L20.8825 4.08749C21.7186 3.27334 22.7218 2.62233 23.8353 2.17649C24.9488 1.73061 26.1475 1.5 27.3602 1.5C28.5729 1.5 29.7717 1.73061 30.8852 2.17649C31.9986 2.62233 33.0019 3.27334 33.8379 4.08749L33.8417 4.09112C37.3861 7.51877 37.3861 13.0537 33.8417 16.4814L19.0315 30.798L19.0289 30.8006C19.0282 30.801 19.0269 30.8016 19.025 30.8024C19.0192 30.8047 19.0105 30.8068 19 30.8068C18.9895 30.8068 18.9808 30.8047 18.975 30.8024L18.4172 32.1948L18.975 30.8024C18.9731 30.8016 18.9718 30.8009 18.9711 30.8005L18.9685 30.798L4.15833 16.4814C4.15826 16.4813 4.15819 16.4812 4.15812 16.4812C0.614035 13.0536 0.613731 7.52055 4.15858 4.09087L4.15859 4.09088L4.16207 4.08749C4.99812 3.27334 6.0014 2.62233 7.11482 2.17649C8.22835 1.73061 9.42708 1.5 10.6398 1.5C11.8525 1.5 13.0512 1.73061 14.1647 2.17649C15.2782 2.62233 16.2814 3.27334 17.1175 4.08749L17.1175 4.0875L17.1236 4.09342C17.3782 4.33848 17.6151 4.59746 17.8361 4.86933L18.9955 6.2954L20.1603 4.87372C20.3857 4.59861 20.6251 4.33703 20.88 4.08993Z"
+                    stroke="currentColor"
+                    stroke-width="0"
+                    fill="#D04847"
+                  />
+                </svg>
+              </button>
             </div>
             <div class="product-info__placing-bottom">
-              <div class="info-product__quantity-body">
+              <!-- <div class="info-product__quantity-body">
                 <button class="info-product__quantity-btn--minus">-</button>
                 <div class="info-product__quantity">1</div>
                 <button class="info-product__quantity-btn--plus">+</button>
-              </div>
-              <button class="info-product__cart">
+              </div> -->
+              <button
+                v-if="!isCart"
+                class="info-product__cart"
+                @click="btnAddToCart(productStore.products.id)"
+              >
                 Добавить в корзину
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="37"
+                  height="36"
+                  viewBox="0 0 37 36"
+                  fill="none"
+                >
+                  <path
+                    d="M3.82274 0.798049C3.54061 0.440375 3.12931 0.181859 2.65901 0.0665958C2.18871 -0.0486674 1.68854 -0.0135381 1.24381 0.165992C0.799082 0.345521 0.437341 0.658331 0.220291 1.05106C0.00324008 1.4438 -0.0556756 1.89213 0.0535933 2.31959L5.75996 24.5799L5.13036 26.5676C4.2193 26.6777 3.35616 27.0006 2.62684 27.5041C1.89751 28.0076 1.32742 28.6742 0.973299 29.4376C0.619174 30.2009 0.493357 31.0344 0.608368 31.8551C0.723378 32.6758 1.07521 33.4551 1.62884 34.1155C2.18248 34.7758 2.91863 35.2942 3.76404 35.619C4.60945 35.9438 5.53464 36.0638 6.44756 35.9669C7.36049 35.8701 8.22931 35.5598 8.96759 35.0669C9.70586 34.5741 10.2879 33.9159 10.6556 33.1578H21.0071C21.4909 34.1552 22.3415 34.9723 23.4161 35.4717C24.4906 35.9712 25.7234 36.1224 26.9073 35.9001C28.0912 35.6777 29.1539 35.0953 29.9167 34.2508C30.6796 33.4063 31.096 32.3512 31.096 31.2629C31.096 30.1747 30.6796 29.1196 29.9167 28.2751C29.1539 27.4306 28.0912 26.8482 26.9073 26.6258C25.7234 26.4035 24.4906 26.5547 23.4161 27.0541C22.3415 27.5536 21.4909 28.3707 21.0071 29.3681H10.6556C10.3229 28.6822 9.81337 28.0797 9.17957 27.6097L9.95866 25.1522C10.0128 24.9827 10.0405 24.8074 10.0408 24.6311L31.6723 22.8613C32.1167 22.8247 32.5366 22.662 32.8715 22.3967C33.2065 22.1314 33.4391 21.7772 33.5359 21.3853L36.9597 7.52844C37.0146 7.30679 37.0134 7.07687 36.9563 6.85566C36.8992 6.63446 36.7875 6.42764 36.6297 6.25047C36.4718 6.0733 36.2717 5.93031 36.0442 5.83207C35.8167 5.73383 35.5675 5.68285 35.3151 5.68289H7.65296C7.62039 5.6322 7.58526 5.58289 7.54767 5.5351L3.82274 0.798049Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
+              <button
+                v-else
+                class="info-product__cart"
+                @click="btnAddToCart(productStore.products.id)"
+              >
+                Товар в корзине
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="37"
@@ -251,14 +298,22 @@
         </div>
       </div>
     </div>
+    <div class="product__loading" v-else>
+      <div class="product__loading-container">
+        <h3 class="product__load">Загрузка...</h3>
+      </div>
+    </div>
   </div>
   <Footer />
 </template>
 
 <script>
-import { onMounted, defineComponent, ref } from 'vue'
+import { onMounted, computed, defineComponent, ref } from 'vue'
 import { useProductStore } from '@/store/ProductStore'
 import { useProductImgStore } from '@/store/ProductImgStore'
+import { useFavouriteStore } from '@/store/FavouriteStore'
+import { useCartStore } from '@/store/CartStore'
+
 import { useRoute } from 'vue-router'
 
 import Header from '@/components/Header.vue'
@@ -292,10 +347,6 @@ export default {
       default: '',
     },
     product: {},
-    // product: {
-    //   type: Object,
-    //   default: () => {},
-    // },
   },
   // data() {
   //   return {
@@ -313,6 +364,8 @@ export default {
   setup(props) {
     const productStore = useProductStore()
     const productImgStore = useProductImgStore()
+    const favouriteStore = useFavouriteStore()
+    const cartStore = useCartStore()
     const route = useRoute()
     const thumbsSwiper = ref()
     const setThumbsSwiper = swiper => {
@@ -325,10 +378,36 @@ export default {
       )
     }
 
+    function btnAddToFavourite(productId) {
+      favouriteStore.addToFavourites(productId)
+    }
+
+    function btnAddToCart(productId) {
+      console.log(productId)
+      cartStore.addToCart(productId)
+    }
+
+    const isFavourite = computed(() => {
+      return (
+        favouriteStore.favouriteItems.find(
+          favouriteItem => favouriteItem.productId === productStore.products.id
+        ) !== undefined
+      )
+    })
+
+    const isCart = computed(() => {
+      return (
+        cartStore.cartItems.find(
+          cartItem => cartItem.productId === productStore.products.id
+        ) !== undefined
+      )
+    })
+
     // const product = productsStore.getProductById(props.route.params.id)
     onMounted(() => {
       const currentProductId = route.params.id
       productStore.getProduct(currentProductId)
+      favouriteStore.getFavourite(props.id)
       productImgStore.getProductImg(props.id)
       //const productId = route.params.id
       // const product = props.id
@@ -343,8 +422,12 @@ export default {
     return {
       //product,
       getProductImgForProduct,
+      btnAddToCart,
+      btnAddToFavourite,
       productStore,
       productImgStore,
+      isFavourite,
+      isCart,
       thumbsSwiper,
       setThumbsSwiper,
       modules: [FreeMode, Navigation, Thumbs],
@@ -402,6 +485,20 @@ export default {
   // .product__description
   &__description {
     margin-bottom: 150px;
+  }
+  // .product__loading
+  &__loading {
+  }
+  // .product__loading-container
+  &__loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+  }
+  // .product__load
+  &__load {
+    font-size: 32px;
   }
 }
 .swiper-product {
@@ -496,11 +593,19 @@ export default {
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
+    margin: 0 auto;
+    width: 70%;
     font-size: 24px;
-    padding: 10px;
+    padding: 15px;
     color: #fff;
     border-radius: 10px;
     background: $blue-second;
+    transition: background 0.1s ease-in-out;
+
+    &:hover {
+      background: $red;
+    }
   }
   &__cart svg {
     margin-left: 20px;

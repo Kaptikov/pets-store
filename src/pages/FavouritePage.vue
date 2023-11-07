@@ -17,7 +17,7 @@
             />
           </div>
           <div class="favourite__container-loader" v-else>
-            <h3 class="favourite__error">Здесь пока ничего нет</h3>
+            <h3 class="favourite__load">Здесь пока ничего нет</h3>
           </div>
         </div>
       </div>
@@ -89,6 +89,14 @@ export default defineComponent({
   }
   // .favourite__container-loader
   &__container-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+  }
+  // .favourite__load
+  &__load {
+    font-size: 28px;
   }
 }
 </style>

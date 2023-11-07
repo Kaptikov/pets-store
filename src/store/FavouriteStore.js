@@ -15,7 +15,7 @@ export const useFavouriteStore = defineStore('favouriteStore', {
         .get(`/api/FavouriteItem/${id}`)
         .then(response => {
           this.favouriteItems = response.data
-          console.log(this.favouriteItems)
+          console.log('Get', this.favouriteItems)
         })
         .catch(error => {
           console.log(error)
@@ -30,6 +30,32 @@ export const useFavouriteStore = defineStore('favouriteStore', {
         console.log(error)
         return null
       }
+    },
+
+    // async addToFavorites(productId) {
+    //     axios.post('/api/FavouriteItem/', { productId }).then(response => {
+    //       this.getFavourite()
+    //     })
+    //     // Обработка ответа от API
+    //     // console.log(response.data)
+    //    catch (error) {
+    //     console.log(error)
+    //   }
+
+    async addToFavourites(productId) {
+      axios
+        .post('/api/FavouriteItem/', {
+          favouriteId: 1,
+          productId,
+        })
+        .then(response => {
+          this.favouriteItems = response.data
+          // this.favouriteItems = response.data
+          console.log('Post', this.favouriteItems)
+        })
+        .catch(error => {
+          console.log(error)
+        })
     },
 
     // async getProductInFavourite(id) {

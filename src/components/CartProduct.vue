@@ -1,7 +1,12 @@
 <template lang="">
   <div class="catalog__card card-catalog">
     <div class="cart__item item-cart">
-      <img class="item-cart__img" src="../assets/img/product.jpg" alt="" />
+      <!-- <img class="item-cart__img" src="../assets/img/product.jpg" alt="" /> -->
+      <img
+        :src="cartItem.products.imgUrl"
+        alt="Изображение товара"
+        class="card-catalog__img"
+      />
       <!-- <router-link
         :to="{ name: 'productPage', params: { id: product.id } }"
         class="item-cart__title"
@@ -146,6 +151,8 @@ export default {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    font-size: 14px;
+    font-weight: 500;
   }
   // .card-catalog__btn--favourite
   &__btn--favourite {

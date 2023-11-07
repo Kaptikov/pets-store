@@ -1,12 +1,8 @@
 <template lang="">
   <div class="favourite__item item-favourite">
-    <div
-      class="item-favourite__img"
-      v-for="productImg of favouriteStore.imgUrls"
-      :key="productImg.id"
-      :productImg="productImg"
-    >
-      <img :src="productImg.imgUrl" alt="" />
+    <div class="item-favourite__img">
+      <!-- <img :src="productImg.imgUrl" alt="" /> -->
+      <img :src="favouriteItem.products.imgUrl" alt="Изображение товара" />
     </div>
     <div class="item-favourite__text">
       <div class="item-favourite__title">
@@ -27,16 +23,30 @@
           Удалить
         </button>
       </div>
-      <button class="item-favourite__btn-cart">В корзину</button>
+      <button
+        v-if="!isCart"
+        class="item-favourite__btn-cart"
+        @click="btnAddToCart(favouriteItem.products.id)"
+      >
+        В корзину
+      </button>
+      <button
+        v-else
+        class="item-favourite__btn-cart item-favourite__btn-cart--in-cart"
+        @click="btnRemoveFromCart()"
+      >
+        В корзине
+      </button>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useProductImgStore } from '@/store/ProductImgStore'
 import { useProductStore } from '@/store/ProductStore'
 import { useFavouriteStore } from '@/store/FavouriteStore'
+import { useCartStore } from '@/store/CartStore'
 
 export default {
   // data() {
@@ -50,24 +60,44 @@ export default {
     favouriteItem: {},
   },
   setup(props) {
-    const productImgStore = useProductImgStore()
     const productStore = useProductStore()
+    const cartStore = useCartStore()
     const favouriteStore = useFavouriteStore()
 
     function handleRemoveFromFavorites(id) {
       favouriteStore.removeFromFavorites(id)
     }
 
+    function btnAddToCart(productId) {
+      console.log(productId)
+      cartStore.addToCart(productId)
+    }
+
+    function btnRemoveFromCart(productId) {
+      console.log('Товар в корзине')
+    }
+
+    const isCart = computed(() => {
+      // console.log(favouriteStore.favouriteItems.products.id)
+      return (
+        cartStore.cartItems.find(
+          cartItem => cartItem.productId === props.favouriteItem.products.id
+        ) !== undefined
+      )
+    })
+
     onMounted(() => {
-      // productStore.getProduct(props.id)
-      // cartStore.getCart(props.id)
-      // favouriteStore.getProductInFavourite(props.id)
       favouriteStore.getFavourite(props.id)
-      // favouriteStore.getProductImg(props.id)
+      cartStore.getCart(props.id)
+      // productStore.getProduct(props.id)
     })
     return {
       favouriteStore,
+      cartStore,
       handleRemoveFromFavorites,
+      btnAddToCart,
+      btnRemoveFromCart,
+      isCart,
       // productStore,
       //productImgStore,
     }
@@ -155,6 +185,19 @@ export default {
     background: $blue-second;
     padding: 10px;
     border-radius: 10px;
+    transition: 0.2s ease-in-out;
+
+    &:hover {
+      background: $red;
+    }
+
+    &--in-cart {
+      background: $red;
+
+      // &:hover {
+      //   background: $blue-second;
+      // }
+    }
   }
 }
 </style>

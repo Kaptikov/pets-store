@@ -12,17 +12,9 @@ export const useCartStore = defineStore('cartStore', {
       return this.cartItems.reduce((total, item) => {
         // console.log(item.quantity)
         // console.log(item.products.price)
-
         return total + item.quantity * item.products.price
       }, 0)
     },
-    // isFavourite() {
-    //   return (
-    //     favouriteItems.find(
-    //       favouriteItem => favouriteItem.productId === props.product.id
-    //     ) !== undefined
-    //   )
-    // },
   },
 
   actions: {
@@ -52,6 +44,22 @@ export const useCartStore = defineStore('cartStore', {
         })
     },
 
+    async addToCart(productId) {
+      axios
+        .post('/api/CartItem/', {
+          cartId: 1,
+          quantity: 1,
+          productId,
+        })
+        .then(response => {
+          this.cartItems = response.data
+          console.log('Post', this.cartItems)
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    },
+
     async removeFromCart(id) {
       try {
         const response = await axios.delete(`/api/CartItem/${id}/`)
@@ -64,15 +72,27 @@ export const useCartStore = defineStore('cartStore', {
     },
 
     async updateCartItemQuantity(id, quantity) {
-      try {
-        const response = await axios.put(`/api/CartItem/${id}`, { quantity })
-        console.log('Количество', quantity)
-        console.log(response.data)
-        // Handle the response from the API
-      } catch (error) {
-        console.log(error)
-      }
+      axios
+        .put(`/api/CartItem/${id}`, { quantity })
+        .then(response => {
+          this.cartItems = response.data
+          console.log('Put', this.cartItems)
+        })
+        .catch(error => {
+          console.log(error)
+        })
     },
+
+    // async updateCartItemQuantity(id, quantity) {
+    //   try {
+    //     const response = await axios.put(`/api/CartItem/${id}`, { quantity })
+    //     console.log('Количество', quantity)
+    //     console.log(response.data)
+    //     // Handle the response from the API
+    //   } catch (error) {
+    //     console.log(error)
+    //   }
+    // },
 
     // async getProductByCart(id) {
     //   axios

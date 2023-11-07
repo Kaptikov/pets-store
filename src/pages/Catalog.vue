@@ -29,13 +29,6 @@
           <div class="catalog__container-loader _container" v-else>
             <h3>Error: Data Not Downloaded</h3>
           </div>
-          <div>
-            <CartProduct
-              v-for="cartItem of cartStore.cartItems"
-              :key="cartItem.id"
-              :cartItem="cartItem"
-            />
-          </div>
           <div class="catalog__pagination pagination-catalog">
             <a
               href="#"
@@ -115,10 +108,11 @@ export default defineComponent({
       //window.initSelects()
       productStore.getProduct(props.id)
       favouriteStore.getFavourite(props.id)
-      // cartStore.getCart(props.id)
+      cartStore.getCart(props.id)
     })
     return {
       productStore,
+      favouriteStore,
       cartStore,
       //categoriesStore,
     }

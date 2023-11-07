@@ -117,8 +117,32 @@
             +
           </button>
         </div> -->
-        <button class="card-catalog__cart" @click="btnAddToCart(product.id)">
+        <button
+          v-if="!isCart"
+          class="card-catalog__cart"
+          @click="btnAddToCart(product.id)"
+        >
           В корзину
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="37"
+            height="36"
+            viewBox="0 0 37 36"
+            fill="none"
+          >
+            <path
+              d="M3.82274 0.798049C3.54061 0.440375 3.12931 0.181859 2.65901 0.0665958C2.18871 -0.0486674 1.68854 -0.0135381 1.24381 0.165992C0.799082 0.345521 0.437341 0.658331 0.220291 1.05106C0.00324008 1.4438 -0.0556756 1.89213 0.0535933 2.31959L5.75996 24.5799L5.13036 26.5676C4.2193 26.6777 3.35616 27.0006 2.62684 27.5041C1.89751 28.0076 1.32742 28.6742 0.973299 29.4376C0.619174 30.2009 0.493357 31.0344 0.608368 31.8551C0.723378 32.6758 1.07521 33.4551 1.62884 34.1155C2.18248 34.7758 2.91863 35.2942 3.76404 35.619C4.60945 35.9438 5.53464 36.0638 6.44756 35.9669C7.36049 35.8701 8.22931 35.5598 8.96759 35.0669C9.70586 34.5741 10.2879 33.9159 10.6556 33.1578H21.0071C21.4909 34.1552 22.3415 34.9723 23.4161 35.4717C24.4906 35.9712 25.7234 36.1224 26.9073 35.9001C28.0912 35.6777 29.1539 35.0953 29.9167 34.2508C30.6796 33.4063 31.096 32.3512 31.096 31.2629C31.096 30.1747 30.6796 29.1196 29.9167 28.2751C29.1539 27.4306 28.0912 26.8482 26.9073 26.6258C25.7234 26.4035 24.4906 26.5547 23.4161 27.0541C22.3415 27.5536 21.4909 28.3707 21.0071 29.3681H10.6556C10.3229 28.6822 9.81337 28.0797 9.17957 27.6097L9.95866 25.1522C10.0128 24.9827 10.0405 24.8074 10.0408 24.6311L31.6723 22.8613C32.1167 22.8247 32.5366 22.662 32.8715 22.3967C33.2065 22.1314 33.4391 21.7772 33.5359 21.3853L36.9597 7.52844C37.0146 7.30679 37.0134 7.07687 36.9563 6.85566C36.8992 6.63446 36.7875 6.42764 36.6297 6.25047C36.4718 6.0733 36.2717 5.93031 36.0442 5.83207C35.8167 5.73383 35.5675 5.68285 35.3151 5.68289H7.65296C7.62039 5.6322 7.58526 5.58289 7.54767 5.5351L3.82274 0.798049Z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+
+        <button
+          v-else
+          class="card-catalog__cart"
+          @click="btnRemoveFromCart(product.id)"
+        >
+          В корзине
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="37"
@@ -186,11 +210,15 @@ export default {
     }
 
     function btnAddToFavourite(productId) {
-      productStore.addToFavorites(productId)
+      favouriteStore.addToFavourites(productId)
     }
 
     function btnAddToCart(productId) {
-      productStore.addToCart(productId)
+      cartStore.addToCart(productId)
+    }
+
+    function btnRemoveFromCart(props) {
+      cartStore.removeFromCart(props.favouriteItems.id)
     }
 
     function btnRemoveForFavourite() {
@@ -204,6 +232,14 @@ export default {
       return (
         favouriteStore.favouriteItems.find(
           favouriteItem => favouriteItem.productId === props.product.id
+        ) !== undefined
+      )
+    })
+
+    const isCart = computed(() => {
+      return (
+        cartStore.cartItems.find(
+          cartItem => cartItem.productId === props.product.id
         ) !== undefined
       )
     })
@@ -223,7 +259,9 @@ export default {
       btnAddToFavourite,
       btnAddToCart,
       btnRemoveForFavourite,
+      btnRemoveFromCart,
       isFavourite,
+      isCart,
       // buttonTitle,
       onSwiper,
       onSlideChange,
